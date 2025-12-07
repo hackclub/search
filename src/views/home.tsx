@@ -54,7 +54,7 @@ export const Home = () => {
 
         <a
           href="/auth/login"
-          class="inline-block bg-brand-primary text-white px-8 py-4 rounded-full text-lg font-bold hover:tracking-wider transition-all mb-20"
+          class="inline-block bg-brand-primary text-white px-8 py-4 rounded-md text-lg font-bold hover:tracking-wider transition-all mb-20"
         >
           Sign in with Hack Club
         </a>
@@ -65,9 +65,9 @@ export const Home = () => {
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-5xl mx-auto mb-20">
           {endpoints.map((endpoint) => (
-            <div class="bg-white border-2 border-brand-border/50 rounded-2xl p-6 text-left hover:border-brand-primary/30 transition-colors">
+            <div class="bg-brand-surface border border-brand-border/50 rounded-lg p-6 text-left hover:border-brand-primary/30 transition-colors">
               <div class="flex items-center gap-2 mb-3">
-                <span class="px-3 py-1 rounded-full text-xs font-bold tracking-wider bg-green-100 text-green-700 border border-green-200">
+                <span class="px-3 py-1 rounded text-xs font-bold tracking-wider bg-green-900/50 text-green-400 border border-green-700">
                   {endpoint.method}
                 </span>
                 <code class="text-xs font-mono text-brand-primary truncate">

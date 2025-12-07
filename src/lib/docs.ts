@@ -15,9 +15,11 @@ import markedShiki from "marked-shiki";
 import { createHighlighter } from "shiki";
 import { env } from "../env";
 
+const theme = "catppuccin-mocha";
+
 const highlighter = await createHighlighter({
   langs: ["bash", "javascript", "json", "markdown", "python", "typescript"],
-  themes: ["github-dark-dimmed"],
+  themes: [theme],
 });
 
 const docsPath = join(process.cwd(), "src", "docs.md");
@@ -41,7 +43,7 @@ const markedInstance = new Marked().use(markedAlert()).use(
     highlight(code, lang, props) {
       return highlighter.codeToHtml(code, {
         lang,
-        theme: "github-dark-dimmed",
+        theme,
         meta: { __raw: props.join(" ") },
         transformers: [
           transformerNotationDiff({ matchAlgorithm: "v3" }),

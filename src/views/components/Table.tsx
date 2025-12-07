@@ -14,10 +14,10 @@ type TableProps<T> = {
 
 export const Table = <T,>({ columns, data, rowClass }: TableProps<T>) => {
   return (
-    <div class="overflow-x-auto border-2 border-brand-border bg-white rounded-2xl shadow-sm transition-colors">
+    <div class="overflow-x-auto border border-brand-border bg-brand-surface rounded-lg shadow-sm transition-colors">
       <table class="w-full border-collapse">
         <thead>
-          <tr class="border-b-2 border-brand-border bg-brand-bg/50">
+          <tr class="border-b border-brand-border bg-brand-primary/10">
             {columns.map((column) => (
               <th class="text-left py-4 px-4 font-bold text-sm text-brand-heading uppercase tracking-wider">
                 {column.header}
@@ -28,7 +28,7 @@ export const Table = <T,>({ columns, data, rowClass }: TableProps<T>) => {
         <tbody>
           {data.map((row, _idx) => (
             <tr
-              class={`border-b border-brand-border/50 hover:bg-brand-bg/30 transition-colors ${rowClass ? rowClass(row) : ""}`}
+              class={`border-b border-brand-border/30 hover:bg-brand-primary/5 transition-colors ${rowClass ? rowClass(row) : ""}`}
             >
               {columns.map((column) => (
                 <td class="py-2 px-4 text-sm text-brand-text font-medium">

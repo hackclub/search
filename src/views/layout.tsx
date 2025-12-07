@@ -69,13 +69,13 @@ export const Layout = ({
                   },
                   colors: {
                     brand: {
-                      bg: '#FEF2F2',
-                      primary: '#DC2626',
-                      heading: '#450A0A',
-                      text: '#991B1B',
-                      'primary-hover': '#B91C1C',
-                      'surface': '#FFFFFF',
-                      'border': '#FECACA',
+                      bg: '#1a1025',
+                      primary: '#a855f7',
+                      heading: '#e9d5ff',
+                      text: '#c4b5fd',
+                      'primary-hover': '#9333ea',
+                      'surface': '#2d1f3d',
+                      'border': '#581c87',
                     }
                   },
                   borderRadius: {

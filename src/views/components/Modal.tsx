@@ -70,7 +70,7 @@ export const Modal = ({
         {...{
           "x-on:click.outside": `${name} = false`,
         }}
-        class="bg-white border-2 border-brand-border p-8 rounded-3xl max-w-xl w-11/12 shadow-2xl"
+        class="bg-brand-surface border border-brand-border p-8 rounded-xl max-w-xl w-11/12 shadow-2xl"
       >
         <h3 class="text-2xl font-bold mb-4 text-brand-heading select-none">
           {title}
@@ -107,14 +107,14 @@ export const ModalButton = ({
   children,
 }: ModalButtonProps) => {
   const baseClasses =
-    "px-5 py-2.5 text-sm font-medium transition-all duration-200 rounded-full active:scale-95 select-none hover:tracking-wider";
+    "px-5 py-2.5 text-sm font-medium transition-all duration-200 rounded-md active:scale-95 select-none hover:tracking-wider";
 
   const variantClasses = {
     primary: "bg-brand-primary text-white hover:bg-brand-primary-hover",
     secondary:
-      "bg-white text-brand-text border-2 border-brand-border hover:border-brand-text/30 hover:bg-brand-bg",
+      "bg-brand-surface text-brand-text border-2 border-brand-border hover:border-brand-text/30 hover:bg-brand-bg",
     danger:
-      "bg-white text-red-500 border-2 border-red-100 hover:bg-red-50 hover:border-red-200",
+      "bg-brand-surface text-red-400 border-2 border-red-900 hover:bg-red-900/30 hover:border-red-700",
   };
 
   const classes = `${baseClasses} ${variantClasses[variant]}`;
