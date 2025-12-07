@@ -7,6 +7,7 @@ const envSchema = type({
   HACK_CLUB_CLIENT_ID: "string",
   HACK_CLUB_CLIENT_SECRET: "string",
   BRAVE_SEARCH_API_KEY: "string",
+  BRAVE_SUGGESTIONS_API_KEY: "string",
   NODE_ENV: "'development' | 'production' | 'test' = 'development'",
   "ENFORCE_IDV?": type("'true' | 'false'").pipe((val) => val === "true"),
   "SENTRY_DSN?": "string",

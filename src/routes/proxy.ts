@@ -25,11 +25,15 @@ const ENDPOINTS = {
 
 type EndpointType = keyof typeof ENDPOINTS;
 
-function getBraveHeaders(): Record<string, string> {
+function getBraveHeaders(endpoint: EndpointType): Record<string, string> {
+  const apiKey = endpoint === "suggest" 
+    ? env.BRAVE_SUGGESTIONS_API_KEY 
+    : env.BRAVE_SEARCH_API_KEY;
+  
   return {
     Accept: "application/json",
     "Accept-Encoding": "gzip",
-    "X-Subscription-Token": env.BRAVE_SEARCH_API_KEY,
+    "X-Subscription-Token": apiKey,
   };
 }
 
@@ -111,7 +115,7 @@ function handleSearchRequest(endpoint: EndpointType) {
 
       const response = await fetch(searchUrl, {
         method: "GET",
-        headers: getBraveHeaders(),
+        headers: getBraveHeaders(endpoint),
       });
 
       const responseData = await response.json();
