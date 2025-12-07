@@ -32,7 +32,7 @@ app.use("*", secureHeaders());
 app.use("/*", requestId(), trimTrailingSlash());
 app.use("/*", csrf({ origin: env.BASE_URL }));
 app.use(
-  "/proxy/v1/*",
+  "/res/v1/*",
   cors({
     origin: (origin) => {
       if (
@@ -70,7 +70,7 @@ app.onError((err, c) => {
 
 app.route("/", dashboard);
 app.route("/auth", auth);
-app.route("/proxy/v1", proxy);
+app.route("/res/v1", proxy);
 app.route("/api", api);
 app.route("/docs", docs);
 app.route("/global", global);

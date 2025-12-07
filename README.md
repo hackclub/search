@@ -35,10 +35,10 @@ ENFORCE_IDV=false
 
 ## API Endpoints
 
-- `GET /proxy/v1/web/search?q=...` - Web search
-- `GET /proxy/v1/images/search?q=...` - Image search
-- `GET /proxy/v1/stats` - Usage statistics
-- `GET /proxy/v1/openapi.json` - OpenAPI specification
+- `GET /res/v1/web/search?q=...` - Web search
+- `GET /res/v1/images/search?q=...` - Image search
+- `GET /res/v1/stats` - Usage statistics
+- `GET /res/v1/openapi.json` - OpenAPI specification
 
 ## Development
 

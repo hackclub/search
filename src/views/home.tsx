@@ -3,32 +3,32 @@ import { Layout } from "./layout";
 const endpoints = [
   {
     method: "GET",
-    path: "/proxy/v1/web/search",
+    path: "/res/v1/web/search",
     title: "Web Search",
     description:
       "Search the web for pages, news, videos, discussions, and more.",
   },
   {
     method: "GET",
-    path: "/proxy/v1/images/search",
+    path: "/res/v1/images/search",
     title: "Image Search",
     description: "Search for images across the web.",
   },
   {
     method: "GET",
-    path: "/proxy/v1/videos/search",
+    path: "/res/v1/videos/search",
     title: "Video Search",
     description: "Search for videos from YouTube, Vimeo, and more.",
   },
   {
     method: "GET",
-    path: "/proxy/v1/news/search",
+    path: "/res/v1/news/search",
     title: "News Search",
     description: "Search for news articles from around the world.",
   },
   {
     method: "GET",
-    path: "/proxy/v1/suggest/search",
+    path: "/res/v1/suggest/search",
     title: "Suggestions",
     description: "Get search query autocomplete suggestions.",
   },

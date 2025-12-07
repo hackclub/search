@@ -7,7 +7,7 @@ For more detailed docs, see the [Brave Search API docs](https://api-dashboard.se
 ## Quick Start
 
 ```bash
-curl "{{BASE_URL}}/proxy/v1/web/search?q=hack+club" \
+curl "{{BASE_URL}}/res/v1/web/search?q=hack+club" \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
@@ -26,7 +26,7 @@ Authorization: Bearer sk-hc-v1-...
 Search the web for pages, news, videos, discussions, and more.
 
 ```
-GET /proxy/v1/web/search
+GET /res/v1/web/search
 ```
 
 #### Parameters
@@ -46,7 +46,7 @@ GET /proxy/v1/web/search
 #### Example
 
 ```bash
-curl "{{BASE_URL}}/proxy/v1/web/search?q=raspberry+pi+projects&count=10" \
+curl "{{BASE_URL}}/res/v1/web/search?q=raspberry+pi+projects&count=10" \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
@@ -57,7 +57,7 @@ curl "{{BASE_URL}}/proxy/v1/web/search?q=raspberry+pi+projects&count=10" \
 Search for images across the web.
 
 ```
-GET /proxy/v1/images/search
+GET /res/v1/images/search
 ```
 
 #### Parameters
@@ -73,7 +73,7 @@ GET /proxy/v1/images/search
 #### Example
 
 ```bash
-curl "{{BASE_URL}}/proxy/v1/images/search?q=circuit+board&count=20" \
+curl "{{BASE_URL}}/res/v1/images/search?q=circuit+board&count=20" \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
@@ -84,7 +84,7 @@ curl "{{BASE_URL}}/proxy/v1/images/search?q=circuit+board&count=20" \
 Search for videos across the web.
 
 ```
-GET /proxy/v1/videos/search
+GET /res/v1/videos/search
 ```
 
 #### Parameters
@@ -103,7 +103,7 @@ GET /proxy/v1/videos/search
 #### Example
 
 ```bash
-curl "{{BASE_URL}}/proxy/v1/videos/search?q=javascript+tutorial&count=10" \
+curl "{{BASE_URL}}/res/v1/videos/search?q=javascript+tutorial&count=10" \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
@@ -143,7 +143,7 @@ curl "{{BASE_URL}}/proxy/v1/videos/search?q=javascript+tutorial&count=10" \
 Search for news articles.
 
 ```
-GET /proxy/v1/news/search
+GET /res/v1/news/search
 ```
 
 #### Parameters
@@ -163,7 +163,7 @@ GET /proxy/v1/news/search
 #### Example
 
 ```bash
-curl "{{BASE_URL}}/proxy/v1/news/search?q=technology&freshness=pd" \
+curl "{{BASE_URL}}/res/v1/news/search?q=technology&freshness=pd" \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
@@ -202,7 +202,7 @@ curl "{{BASE_URL}}/proxy/v1/news/search?q=technology&freshness=pd" \
 Get search query suggestions.
 
 ```
-GET /proxy/v1/suggest/search
+GET /res/v1/suggest/search
 ```
 
 #### Parameters
@@ -218,7 +218,7 @@ GET /proxy/v1/suggest/search
 #### Example
 
 ```bash
-curl "{{BASE_URL}}/proxy/v1/suggest/search?q=how+to&count=10" \
+curl "{{BASE_URL}}/res/v1/suggest/search?q=how+to&count=10" \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
@@ -245,7 +245,7 @@ curl "{{BASE_URL}}/proxy/v1/suggest/search?q=how+to&count=10" \
 Get your API usage statistics.
 
 ```
-GET /proxy/v1/stats
+GET /res/v1/stats
 ```
 
 #### Example Response
@@ -284,7 +284,7 @@ GET /proxy/v1/stats
 
 ```javascript
 const response = await fetch(
-  'https://search.hackclub.com/proxy/v1/web/search?q=hack+club',
+  'https://search.hackclub.com/res/v1/web/search?q=hack+club',
   {
     headers: {
       'Authorization': 'Bearer YOUR_API_KEY'
@@ -301,7 +301,7 @@ console.log(data.web.results);
 import requests
 
 response = requests.get(
-    'https://search.hackclub.com/proxy/v1/web/search',
+    'https://search.hackclub.com/res/v1/web/search',
     params={'q': 'hack club'},
     headers={'Authorization': 'Bearer YOUR_API_KEY'}
 )

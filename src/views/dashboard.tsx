@@ -232,7 +232,7 @@ const CreatedModal = () => (
     />
     <p class="mb-3 text-sm font-bold text-brand-heading">Example usage:</p>
     <div class="bg-brand-bg border-2 border-brand-border p-4 mb-6 rounded-xl font-mono text-xs text-brand-text leading-relaxed overflow-x-auto select-text">
-      <div>curl "{env.BASE_URL}/proxy/v1/web/search?q=hello+world" \</div>
+      <div>curl "{env.BASE_URL}/res/v1/web/search?q=hello+world" \</div>
       <div class="pl-4">
         -H "Authorization: Bearer{" "}
         <span class="text-brand-primary" x-text="newKey" />"
