@@ -6,30 +6,11 @@ import { etag } from "hono/etag";
 import { HTTPException } from "hono/http-exception";
 import { timeout } from "hono/timeout";
 import type { ContentfulStatusCode } from "hono/utils/http-status";
-import {
-  describeRoute,
-  openAPIRouteHandler,
-  resolver,
-  validator,
-} from "hono-openapi";
 import { rateLimiter } from "hono-rate-limiter";
 import { db } from "../db";
 import { requestLogs } from "../db/schema";
 import { env } from "../env";
 import { requireApiKey } from "../middleware/auth";
-import {
-  ImageSearchQuerySchema,
-  ImageSearchResponseSchema,
-  NewsSearchQuerySchema,
-  NewsSearchResponseSchema,
-  StatsSchema,
-  SuggestQuerySchema,
-  SuggestResponseSchema,
-  VideoSearchQuerySchema,
-  VideoSearchResponseSchema,
-  WebSearchQuerySchema,
-  WebSearchResponseSchema,
-} from "../openapi";
 import type { AppVariables } from "../types";
 
 // ============================================================================
@@ -221,105 +202,13 @@ const limiterOpts = {
 } as const;
 const standardLimiter = rateLimiter(limiterOpts);
 
-proxy.use((c, next) => {
-  if (c.req.path.endsWith("/openapi.json")) {
-    return next();
-  }
-  return requireApiKey(c, next);
-});
-
-// ============================================================================
-// ROUTE DESCRIPTIONS
-// ============================================================================
-
-const statsRoute = describeRoute({
-  summary: "Get request statistics",
-  description: "Get request statistics for your account.",
-  security: [{ Bearer: [] }],
-  responses: {
-    200: {
-      description: "Successful response.",
-      content: { "application/json": { schema: resolver(StatsSchema) } },
-    },
-  },
-});
-
-const webSearchRoute = describeRoute({
-  summary: "Web search",
-  description:
-    "Search the web using Brave Search API. Returns web results, news, videos, discussions, and more.",
-  security: [{ Bearer: [] }],
-  responses: {
-    200: {
-      description: "Successful response.",
-      content: {
-        "application/json": { schema: resolver(WebSearchResponseSchema) },
-      },
-    },
-  },
-});
-
-const imageSearchRoute = describeRoute({
-  summary: "Image search",
-  description: "Search for images using Brave Search API.",
-  security: [{ Bearer: [] }],
-  responses: {
-    200: {
-      description: "Successful response.",
-      content: {
-        "application/json": { schema: resolver(ImageSearchResponseSchema) },
-      },
-    },
-  },
-});
-
-const videoSearchRoute = describeRoute({
-  summary: "Video search",
-  description: "Search for videos using Brave Search API.",
-  security: [{ Bearer: [] }],
-  responses: {
-    200: {
-      description: "Successful response.",
-      content: {
-        "application/json": { schema: resolver(VideoSearchResponseSchema) },
-      },
-    },
-  },
-});
-
-const newsSearchRoute = describeRoute({
-  summary: "News search",
-  description: "Search for news articles using Brave Search API.",
-  security: [{ Bearer: [] }],
-  responses: {
-    200: {
-      description: "Successful response.",
-      content: {
-        "application/json": { schema: resolver(NewsSearchResponseSchema) },
-      },
-    },
-  },
-});
-
-const suggestRoute = describeRoute({
-  summary: "Search suggestions",
-  description: "Get search query suggestions using Brave Search API.",
-  security: [{ Bearer: [] }],
-  responses: {
-    200: {
-      description: "Successful response.",
-      content: {
-        "application/json": { schema: resolver(SuggestResponseSchema) },
-      },
-    },
-  },
-});
+proxy.use(requireApiKey);
 
 // ============================================================================
 // ROUTES
 // ============================================================================
 
-proxy.get("/stats", statsRoute, standardLimiter, async (c) => {
+proxy.get("/stats", standardLimiter, async (c) => {
   const user = c.get("user");
 
   const stats = await Sentry.startSpan(
@@ -339,97 +228,37 @@ proxy.get("/stats", statsRoute, standardLimiter, async (c) => {
 
 // Web Search
 proxy.use("/web/search", etag());
-proxy.get(
-  "/web/search",
-  webSearchRoute,
-  validator("query", WebSearchQuerySchema),
-  standardLimiter,
-  async (c) => {
-    const queryParams = c.req.valid("query");
-    return handleSearchRequest(c, "web", queryParams);
-  },
-);
+proxy.get("/web/search", standardLimiter, async (c) => {
+  const queryParams = c.req.query();
+  return handleSearchRequest(c, "web", queryParams);
+});
 
 // Image Search
 proxy.use("/images/search", etag());
-proxy.get(
-  "/images/search",
-  imageSearchRoute,
-  validator("query", ImageSearchQuerySchema),
-  standardLimiter,
-  async (c) => {
-    const queryParams = c.req.valid("query");
-    return handleSearchRequest(c, "images", queryParams);
-  },
-);
+proxy.get("/images/search", standardLimiter, async (c) => {
+  const queryParams = c.req.query();
+  return handleSearchRequest(c, "images", queryParams);
+});
 
 // Video Search
 proxy.use("/videos/search", etag());
-proxy.get(
-  "/videos/search",
-  videoSearchRoute,
-  validator("query", VideoSearchQuerySchema),
-  standardLimiter,
-  async (c) => {
-    const queryParams = c.req.valid("query");
-    return handleSearchRequest(c, "videos", queryParams);
-  },
-);
+proxy.get("/videos/search", standardLimiter, async (c) => {
+  const queryParams = c.req.query();
+  return handleSearchRequest(c, "videos", queryParams);
+});
 
 // News Search
 proxy.use("/news/search", etag());
-proxy.get(
-  "/news/search",
-  newsSearchRoute,
-  validator("query", NewsSearchQuerySchema),
-  standardLimiter,
-  async (c) => {
-    const queryParams = c.req.valid("query");
-    return handleSearchRequest(c, "news", queryParams);
-  },
-);
+proxy.get("/news/search", standardLimiter, async (c) => {
+  const queryParams = c.req.query();
+  return handleSearchRequest(c, "news", queryParams);
+});
 
 // Suggest
 proxy.use("/suggest/search", etag());
-proxy.get(
-  "/suggest/search",
-  suggestRoute,
-  validator("query", SuggestQuerySchema),
-  standardLimiter,
-  async (c) => {
-    const queryParams = c.req.valid("query");
-    return handleSearchRequest(c, "suggest", queryParams);
-  },
-);
-
-// OpenAPI
-proxy.get(
-  "/openapi.json",
-  openAPIRouteHandler(proxy, {
-    documentation: {
-      info: {
-        title: "Hack Club Search API",
-        version: "1.0.0",
-        description:
-          "A Brave Search API proxy for Hack Club members. All endpoints require `Authorization: Bearer <token>`.",
-      },
-      servers: [
-        {
-          url: "https://search.hackclub.com/proxy/v1",
-          description: "Production",
-        },
-      ],
-      security: [{ Bearer: [] }],
-      components: {
-        securitySchemes: {
-          Bearer: {
-            type: "http",
-            scheme: "bearer",
-          },
-        },
-      },
-    },
-  }),
-);
+proxy.get("/suggest/search", standardLimiter, async (c) => {
+  const queryParams = c.req.query();
+  return handleSearchRequest(c, "suggest", queryParams);
+});
 
 export default proxy;

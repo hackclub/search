@@ -1,4 +1,3 @@
-import { Scalar } from "@scalar/hono-api-reference";
 import "./instrument"; // Sentry
 import * as Sentry from "@sentry/bun";
 import { dns } from "bun";
@@ -75,34 +74,6 @@ app.route("/proxy/v1", proxy);
 app.route("/api", api);
 app.route("/docs", docs);
 app.route("/global", global);
-app.get(
-  "/reference",
-  Scalar({
-    url: "/proxy/v1/openapi.json",
-    hideClientButton: true,
-    hideDarkModeToggle: true,
-    customCss: `
-      .light-mode,
-      .dark-mode {
-        --scalar-font: 'Google Sans', ui-sans-serif, system-ui, sans-serif !important;
-        --scalar-background-1: #FEF2F2 !important;
-        --scalar-background-2: #FFFFFF !important;
-        --scalar-background-3: #FFFFFF !important;
-        --scalar-color-1: #450A0A !important;
-        --scalar-color-2: #991B1B !important;
-        --scalar-color-3: #991B1B !important;
-        --scalar-color-accent: #DC2626 !important;
-        --scalar-border-color: #FECACA !important;
-        --scalar-button-1: #DC2626 !important;
-        --scalar-button-1-color: #FFFFFF !important;
-        --scalar-button-1-hover: #B91C1C !important;
-      }
-      body {
-        background: #FEF2F2 !important;
-      }
-    `,
-  }),
-);
 
 showRoutes(app);
 

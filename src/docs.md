@@ -2,6 +2,8 @@
 
 A Brave Search API proxy for Hack Club members. Get web, image, video, news search results, and query suggestions through a simple, authenticated API.
 
+For more detailed docs, see the [Brave Search API docs](https://api-dashboard.search.brave.com/app/documentation/web-search/get-started) - just replace the `https://api.search.brave.com` with `{{BASE_URL}}`.
+
 ## Quick Start
 
 ```bash
