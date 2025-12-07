@@ -8,12 +8,14 @@ import { apiKeys, sessions, users } from "../db/schema";
 import { env } from "../env";
 import type { AppVariables } from "../types";
 
+const cookieName = "hcs_session_token";
+
 export async function requireAuth(
   c: Context<{ Variables: AppVariables }>,
   next: Next,
 ) {
   return Sentry.startSpan({ name: "middleware.requireAuth" }, async () => {
-    const sessionToken = getCookie(c, "session_token");
+    const sessionToken = getCookie(c, cookieName);
 
     if (!sessionToken) {
       return c.redirect("/");
@@ -64,7 +66,7 @@ export async function optionalAuth(
   c: Context<{ Variables: AppVariables }>,
   next: Next,
 ) {
-  const sessionToken = getCookie(c, "session_token");
+  const sessionToken = getCookie(c, cookieName);
 
   if (!sessionToken) {
     await next();

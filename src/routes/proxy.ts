@@ -26,10 +26,11 @@ const ENDPOINTS = {
 type EndpointType = keyof typeof ENDPOINTS;
 
 function getBraveHeaders(endpoint: EndpointType): Record<string, string> {
-  const apiKey = endpoint === "suggest" 
-    ? env.BRAVE_SUGGESTIONS_API_KEY 
-    : env.BRAVE_SEARCH_API_KEY;
-  
+  const apiKey =
+    endpoint === "suggest"
+      ? env.BRAVE_SUGGESTIONS_API_KEY
+      : env.BRAVE_SEARCH_API_KEY;
+
   return {
     Accept: "application/json",
     "Accept-Encoding": "gzip",
