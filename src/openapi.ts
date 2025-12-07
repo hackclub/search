@@ -1,81 +1,17 @@
 import { type } from "arktype";
 
-// Stats schema for user token usage
+// Stats schema for user usage
 export const StatsSchema = type({
   totalRequests: type("number.integer").describe(
     "The total number of requests",
   ),
 });
 
-// Query parameters for web search (Base AI plan compatible)
-export const WebSearchQuerySchema = type({
-  q: type("string").describe(
-    "The user's search query term. Maximum 400 characters and 50 words.",
-  ),
-  "country?": type("string").describe(
-    "The search query country (2 character code). Default: US",
-  ),
-  "search_lang?": type("string").describe(
-    "The search language preference (2+ character code). Default: en",
-  ),
-  "ui_lang?": type("string").describe(
-    "User interface language preferred in response. Default: en-US",
-  ),
-  "count?": type("number.integer").describe(
-    "Number of search results (max 20). Default: 20",
-  ),
-  "offset?": type("number.integer").describe(
-    "Zero-based offset for pagination (max 9). Default: 0",
-  ),
-  "safesearch?": type("'off' | 'moderate' | 'strict'").describe(
-    "Filter for adult content. Default: moderate",
-  ),
-  "freshness?": type("string").describe(
-    "Filter by discovery time: pd (24h), pw (7d), pm (31d), py (365d), or YYYY-MM-DDtoYYYY-MM-DD",
-  ),
-  "text_decorations?": type("boolean").describe(
-    "Whether to include decoration markers in snippets. Default: true",
-  ),
-  "spellcheck?": type("boolean").describe(
-    "Whether to spellcheck the query. Default: true",
-  ),
-  "result_filter?": type("string").describe(
-    "Comma-delimited result types: discussions, faq, infobox, news, query, summarizer, videos, web, locations",
-  ),
-  "units?": type("'metric' | 'imperial'").describe(
-    "Measurement units. Default: derived from country",
-  ),
-  "extra_snippets?": type("boolean").describe(
-    "Get up to 5 additional snippets per result. Available on Base AI plan.",
-  ),
-  "summary?": type("boolean").describe(
-    "Enable summary key generation for summarizer.",
-  ),
-});
+// ============================================================================
+// SHARED SCHEMAS (DRY)
+// ============================================================================
 
-// Query parameters for image search
-export const ImageSearchQuerySchema = type({
-  q: type("string").describe(
-    "The user's search query term. Maximum 400 characters and 50 words.",
-  ),
-  "country?": type("string").describe(
-    "The search query country (2 character code). Default: US",
-  ),
-  "search_lang?": type("string").describe(
-    "The search language preference (2+ character code). Default: en",
-  ),
-  "count?": type("number.integer").describe(
-    "Number of search results (max 200). Default: 50",
-  ),
-  "safesearch?": type("'off' | 'strict'").describe(
-    "Filter for adult content. Default: strict",
-  ),
-  "spellcheck?": type("boolean").describe(
-    "Whether to spellcheck the query. Default: true",
-  ),
-});
-
-// MetaUrl shared type
+// MetaUrl - shared across all search types
 const MetaUrlSchema = type({
   "scheme?": type("string").describe("The protocol scheme extracted from URL"),
   "netloc?": type("string").describe("The network location part of the URL"),
@@ -84,7 +20,7 @@ const MetaUrlSchema = type({
   "path?": type("string").describe("The hierarchical path of the URL"),
 });
 
-// Thumbnail shared type
+// Thumbnail - shared across all search types
 const ThumbnailSchema = type({
   "src?": type("string").describe("The served URL of the thumbnail"),
   "original?": type("string").describe("The original URL of the image"),
@@ -92,13 +28,122 @@ const ThumbnailSchema = type({
   "height?": type("number.integer").describe("Height of the thumbnail"),
 });
 
-// Profile type
+// Profile - shared across video and web search
 const ProfileSchema = type({
   "name?": type("string").describe("The name of the profile"),
   "long_name?": type("string").describe("The long name of the profile"),
   "url?": type("string").describe("The profile URL"),
   "img?": type("string").describe("The profile image URL"),
 });
+
+// Base query schema - shared fields across all search types
+const BaseQuerySchema = type({
+  "original?": type("string").describe("The original query"),
+  "altered?": type("string").describe("The altered query by spellchecker"),
+  "spellcheck_off?": type("boolean").describe("Whether spellchecker was off"),
+  "show_strict_warning?": type("boolean").describe(
+    "Whether lack of results is due to strict safesearch",
+  ),
+});
+
+// Extended query schema for web search
+const WebQuerySchema = BaseQuerySchema.and(
+  type({
+    "cleaned?": type("string").describe("The cleaned normalized query"),
+    "safesearch?": type("boolean").describe("Whether safesearch was enabled"),
+    "is_navigational?": type("boolean").describe(
+      "Whether query is navigational",
+    ),
+    "is_geolocal?": type("boolean").describe(
+      "Whether query has location relevance",
+    ),
+    "local_decision?": type("string").describe(
+      "Whether query is location sensitive",
+    ),
+    "is_news_breaking?": type("boolean").describe(
+      "Whether query has breaking news",
+    ),
+    "country?": type("string").describe("The country used"),
+    "more_results_available?": type("boolean").describe(
+      "Whether more results available",
+    ),
+  }),
+);
+
+// Query schema with cleaned field for video/news
+const MediaQuerySchema = BaseQuerySchema.and(
+  type({
+    "cleaned?": type("string").describe("The cleaned normalized query"),
+  }),
+);
+
+// Base search query parameters - shared across endpoints
+const BaseSearchQueryParams = type({
+  q: type("string").describe(
+    "The user's search query term. Maximum 400 characters and 50 words.",
+  ),
+  "country?": type("string").describe(
+    "The search query country (2 character code). Default: US",
+  ),
+  "search_lang?": type("string").describe(
+    "The search language preference (2+ character code). Default: en",
+  ),
+  "spellcheck?": type("boolean").describe(
+    "Whether to spellcheck the query. Default: true",
+  ),
+});
+
+// Pagination params - shared across web, video, news
+const PaginationParams = type({
+  "count?": type("number.integer").describe("Number of search results"),
+  "offset?": type("number.integer").describe(
+    "Zero-based offset for pagination (max 9). Default: 0",
+  ),
+});
+
+// Safesearch params - shared across most endpoints
+const SafesearchParams = type({
+  "safesearch?": type("'off' | 'moderate' | 'strict'").describe(
+    "Filter for adult content. Default: moderate",
+  ),
+});
+
+// Freshness params - shared across web, video, news
+const FreshnessParams = type({
+  "freshness?": type("string").describe(
+    "Filter by discovery time: pd (24h), pw (7d), pm (31d), py (365d), or YYYY-MM-DDtoYYYY-MM-DD",
+  ),
+});
+
+// ============================================================================
+// WEB SEARCH
+// ============================================================================
+
+export const WebSearchQuerySchema = BaseSearchQueryParams.and(PaginationParams)
+  .and(SafesearchParams)
+  .and(FreshnessParams)
+  .and(
+    type({
+      "ui_lang?": type("string").describe(
+        "User interface language preferred in response. Default: en-US",
+      ),
+      "text_decorations?": type("boolean").describe(
+        "Whether to include decoration markers in snippets. Default: true",
+      ),
+      "result_filter?": type("string").describe(
+        "Comma-delimited result types: discussions, faq, infobox, news, query, summarizer, videos, web, locations",
+      ),
+      "units?": type("'metric' | 'imperial'").describe(
+        "Measurement units. Default: derived from country",
+      ),
+      "extra_snippets?": type("boolean").describe(
+        "Get up to 5 additional snippets per result.",
+      ),
+      "summary?": type("boolean").describe(
+        "Enable summary key generation for summarizer.",
+      ),
+    }),
+  );
 
 // Rating type
 const RatingSchema = type({
@@ -131,31 +176,6 @@ const SearchSchema = type({
   "results?": SearchResultSchema.array().describe("List of search results"),
   "family_friendly?": type("boolean").describe(
     "Whether results are family friendly",
-  ),
-});
-
-// Query info
-const QuerySchema = type({
-  "original?": type("string").describe("The original query"),
-  "show_strict_warning?": type("boolean").describe(
-    "Whether more content is available but restricted",
-  ),
-  "altered?": type("string").describe("The altered query used for search"),
-  "safesearch?": type("boolean").describe("Whether safesearch was enabled"),
-  "is_navigational?": type("boolean").describe("Whether query is navigational"),
-  "is_geolocal?": type("boolean").describe(
-    "Whether query has location relevance",
-  ),
-  "local_decision?": type("string").describe(
-    "Whether query is location sensitive",
-  ),
-  "is_news_breaking?": type("boolean").describe(
-    "Whether query has breaking news",
-  ),
-  "spellcheck_off?": type("boolean").describe("Whether spellchecker was off"),
-  "country?": type("string").describe("The country used"),
-  "more_results_available?": type("boolean").describe(
-    "Whether more results available",
   ),
 });
 
@@ -193,7 +213,42 @@ const FAQSchema = type({
     .describe("List of Q&A results"),
 });
 
-// News result
+// Video data - shared between web and video search
+const VideoDataSchema = type({
+  "duration?": type("string").describe("Duration in HH:MM:SS or MM:SS"),
+  "views?": type("number.integer | string").describe("Number of views"),
+  "creator?": type("string").describe("Creator of the video"),
+  "publisher?": type("string").describe("Publisher of the video"),
+  "thumbnail?": ThumbnailSchema.describe("Video thumbnail"),
+  "tags?": type("string[]").describe("Tags"),
+  "author?": ProfileSchema.describe("Author profile"),
+  "requires_subscription?": type("boolean").describe(
+    "Whether video requires subscription",
+  ),
+});
+
+// Video result - used in web search deep results
+const VideoResultSchema = type({
+  "type?": type("string").describe("Always 'video_result'"),
+  "title?": type("string").describe("Video title"),
+  "url?": type("string").describe("Video URL"),
+  "description?": type("string").describe("Description"),
+  "age?": type("string").describe("Age of the video"),
+  "page_age?": type("string").describe("Page age"),
+  "page_fetched?": type("string").describe("When page was last fetched"),
+  "video?": VideoDataSchema.describe("Video metadata"),
+  "meta_url?": MetaUrlSchema.describe("URL info"),
+  "thumbnail?": ThumbnailSchema.describe("Thumbnail"),
+});
+
+// Videos container for web search
+const VideosSchema = type({
+  "type?": type("string").describe("Always 'videos'"),
+  "results?": VideoResultSchema.array().describe("Video results"),
+  "mutated_by_goggles?": type("boolean").describe("Whether changed by Goggle"),
+});
+
+// News result - shared between web and news search
 const NewsResultSchema = type({
   "type?": type("string").describe("Result type"),
   "title?": type("string").describe("Title of the news"),
@@ -201,6 +256,7 @@ const NewsResultSchema = type({
   "description?": type("string").describe("Description"),
   "age?": type("string").describe("Age of the article"),
   "page_age?": type("string").describe("Date of the article"),
+  "page_fetched?": type("string").describe("When page was last fetched"),
   "meta_url?": MetaUrlSchema.describe("URL info"),
   "source?": type("string").describe("Source of the news"),
   "breaking?": type("boolean").describe("Whether breaking news"),
@@ -209,41 +265,10 @@ const NewsResultSchema = type({
   "extra_snippets?": type("string[]").describe("Extra snippets"),
 });
 
-// News
+// News container for web search
 const NewsSchema = type({
   "type?": type("string").describe("Always 'news'"),
   "results?": NewsResultSchema.array().describe("News results"),
-  "mutated_by_goggles?": type("boolean").describe("Whether changed by Goggle"),
-});
-
-// Video data
-const VideoDataSchema = type({
-  "duration?": type("string").describe("Duration in HH:MM:SS or MM:SS"),
-  "views?": type("string").describe("Number of views"),
-  "creator?": type("string").describe("Creator of the video"),
-  "publisher?": type("string").describe("Publisher of the video"),
-  "thumbnail?": ThumbnailSchema.describe("Video thumbnail"),
-  "tags?": type("string[]").describe("Tags"),
-  "author?": ProfileSchema.describe("Author profile"),
-});
-
-// Video result
-const VideoResultSchema = type({
-  "type?": type("string").describe("Always 'video_result'"),
-  "title?": type("string").describe("Video title"),
-  "url?": type("string").describe("Video URL"),
-  "description?": type("string").describe("Description"),
-  "age?": type("string").describe("Age of the video"),
-  "page_age?": type("string").describe("Page age"),
-  "video?": VideoDataSchema.describe("Video metadata"),
-  "meta_url?": MetaUrlSchema.describe("URL info"),
-  "thumbnail?": ThumbnailSchema.describe("Thumbnail"),
-});
-
-// Videos
-const VideosSchema = type({
-  "type?": type("string").describe("Always 'videos'"),
-  "results?": VideoResultSchema.array().describe("Video results"),
   "mutated_by_goggles?": type("boolean").describe("Whether changed by Goggle"),
 });
 
@@ -309,7 +334,7 @@ const SummarizerSchema = type({
 // Web Search API Response
 export const WebSearchResponseSchema = type({
   "type?": type("string").describe("Always 'search'"),
-  "query?": QuerySchema.describe("Query information"),
+  "query?": WebQuerySchema.describe("Query information"),
   "web?": SearchSchema.describe("Web search results"),
   "discussions?": DiscussionsSchema.describe("Discussion results"),
   "faq?": FAQSchema.describe("FAQ results"),
@@ -320,6 +345,21 @@ export const WebSearchResponseSchema = type({
   "mixed?": MixedResponseSchema.describe("Ranking order"),
   "summarizer?": SummarizerSchema.describe("Summarizer key"),
 });
+
+// ============================================================================
+// IMAGE SEARCH
+// ============================================================================
+
+export const ImageSearchQuerySchema = BaseSearchQueryParams.and(
+  type({
+    "count?": type("number.integer").describe(
+      "Number of search results (max 200). Default: 50",
+    ),
+    "safesearch?": type("'off' | 'strict'").describe(
+      "Filter for adult content. Default: strict",
+    ),
+  }),
+);
 
 // Image search result
 const ImageResultSchema = type({
@@ -366,4 +406,107 @@ export const ImageSearchResponseSchema = type({
   "query?": ImageQuerySchema.describe("Query information"),
   "results?": ImageResultSchema.array().describe("Image results"),
   "extra?": ImageExtraSchema.describe("Extra information"),
+});
+
+// ============================================================================
+// VIDEO SEARCH
+// ============================================================================
+
+export const VideoSearchQuerySchema = BaseSearchQueryParams.and(
+  PaginationParams,
+)
+  .and(SafesearchParams)
+  .and(FreshnessParams)
+  .and(
+    type({
+      "ui_lang?": type("string").describe(
+        "User interface language preferred in response. Default: en-US",
+      ),
+      "operators?": type("boolean").describe(
+        "Whether to apply search operators. Default: true",
+      ),
+    }),
+  );
+
+// Video Search API Response
+export const VideoSearchResponseSchema = type({
+  "type?": type("string").describe("Always 'videos'"),
+  "query?": MediaQuerySchema.describe("Query information"),
+  "results?": VideoResultSchema.array().describe("Video results"),
+  "extra?": type({
+    "might_be_offensive?": type("boolean").describe(
+      "Whether results might be offensive",
+    ),
+  }).describe("Extra information"),
+});
+
+// ============================================================================
+// NEWS SEARCH
+// ============================================================================
+
+export const NewsSearchQuerySchema = BaseSearchQueryParams.and(PaginationParams)
+  .and(SafesearchParams)
+  .and(FreshnessParams)
+  .and(
+    type({
+      "ui_lang?": type("string").describe(
+        "User interface language preferred in response. Default: en-US",
+      ),
+      "extra_snippets?": type("boolean").describe(
+        "Get up to 5 additional snippets per result.",
+      ),
+      "operators?": type("boolean").describe(
+        "Whether to apply search operators. Default: true",
+      ),
+    }),
+  );
+
+// News Search API Response
+export const NewsSearchResponseSchema = type({
+  "type?": type("string").describe("Always 'news'"),
+  "query?": MediaQuerySchema.describe("Query information"),
+  "results?": NewsResultSchema.array().describe("News results"),
+});
+
+// ============================================================================
+// SUGGEST API
+// ============================================================================
+
+export const SuggestQuerySchema = type({
+  q: type("string").describe(
+    "The user's suggest search query term. Max 400 characters, 50 words.",
+  ),
+  "country?": type("string").describe(
+    "The suggest search country (2 character code). Default: US",
+  ),
+  "lang?": type("string").describe(
+    "The suggest search language preference. Default: en",
+  ),
+  "count?": type("number.integer").describe(
+    "Number of suggestions (1-20). Default: 5",
+  ),
+  "rich?": type("boolean").describe(
+    "Whether to enhance suggestions with rich results. Default: false",
+  ),
+});
+
+// Suggest result
+const SuggestResultSchema = type({
+  "query?": type("string").describe("Suggested query completion"),
+  "is_entity?": type("boolean").describe("Whether suggestion is an entity"),
+  "title?": type("string").describe("Enriched title"),
+  "description?": type("string").describe("Enriched description"),
+  "img?": type("string").describe("Enriched image URL"),
+});
+
+// Suggest Query (response)
+const SuggestResponseQuerySchema = type({
+  "original?": type("string").describe("The original query"),
+});
+
+// Suggest API Response
+export const SuggestResponseSchema = type({
+  "type?": type("string").describe("Always 'suggest'"),
+  "query?": SuggestResponseQuerySchema.describe("Query information"),
+  "results?": SuggestResultSchema.array().describe("Suggestion results"),
 });

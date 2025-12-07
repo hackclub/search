@@ -1,6 +1,6 @@
 # Hack Club Search API
 
-A Brave Search API proxy for Hack Club members. Get web and image search results through a simple, authenticated API.
+A Brave Search API proxy for Hack Club members. Get web, image, video, news search results, and query suggestions through a simple, authenticated API.
 
 ## Quick Start
 
@@ -39,35 +39,16 @@ GET /proxy/v1/web/search
 | `safesearch` | No | string | `moderate` | `off`, `moderate`, or `strict` |
 | `freshness` | No | string | - | `pd` (24h), `pw` (7d), `pm` (31d), `py` (365d) |
 | `extra_snippets` | No | bool | `false` | Get up to 5 extra snippets per result |
+| `result_filter` | No | string | - | Comma-delimited result types to include |
 
-#### Example Request
+#### Example
 
 ```bash
-curl "{{BASE_URL}}/proxy/v1/web/search?q=raspberry+pi+projects&count=10&safesearch=strict" \
+curl "{{BASE_URL}}/proxy/v1/web/search?q=raspberry+pi+projects&count=10" \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
-#### Example Response
-
-```json
-{
-  "type": "search",
-  "query": {
-    "original": "raspberry pi projects"
-  },
-  "web": {
-    "type": "search",
-    "results": [
-      {
-        "title": "50 Cool Raspberry Pi Projects",
-        "url": "https://example.com/raspberry-pi-projects",
-        "description": "Discover amazing projects you can build...",
-        "age": "2 days ago"
-      }
-    ]
-  }
-}
-```
+---
 
 ### Image Search
 
@@ -87,10 +68,40 @@ GET /proxy/v1/images/search
 | `count` | No | int | `50` | Number of results (max 200) |
 | `safesearch` | No | string | `strict` | `off` or `strict` |
 
-#### Example Request
+#### Example
 
 ```bash
 curl "{{BASE_URL}}/proxy/v1/images/search?q=circuit+board&count=20" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+---
+
+### Video Search
+
+Search for videos across the web.
+
+```
+GET /proxy/v1/videos/search
+```
+
+#### Parameters
+
+| Parameter | Required | Type | Default | Description |
+|-----------|----------|------|---------|-------------|
+| `q` | Yes | string | - | Search query (max 400 chars, 50 words) |
+| `country` | No | string | `US` | Country code for results |
+| `search_lang` | No | string | `en` | Search language |
+| `ui_lang` | No | string | `en-US` | UI language preference |
+| `count` | No | int | `20` | Number of results (max 50) |
+| `offset` | No | int | `0` | Pagination offset (max 9) |
+| `safesearch` | No | string | `moderate` | `off`, `moderate`, or `strict` |
+| `freshness` | No | string | - | `pd` (24h), `pw` (7d), `pm` (31d), `py` (365d) |
+
+#### Example
+
+```bash
+curl "{{BASE_URL}}/proxy/v1/videos/search?q=javascript+tutorial&count=10" \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
@@ -98,29 +109,134 @@ curl "{{BASE_URL}}/proxy/v1/images/search?q=circuit+board&count=20" \
 
 ```json
 {
-  "type": "images",
+  "type": "videos",
   "query": {
-    "original": "circuit board"
+    "original": "javascript tutorial"
   },
   "results": [
     {
-      "title": "Circuit Board Close-up",
-      "url": "https://example.com/image.jpg",
-      "source": "example.com",
+      "type": "video_result",
+      "url": "https://youtube.com/watch?v=...",
+      "title": "JavaScript Tutorial for Beginners",
+      "description": "Learn JavaScript from scratch...",
+      "age": "2 months ago",
       "thumbnail": {
-        "src": "https://imgs.search.brave.com/...",
-        "width": 200,
-        "height": 150
+        "src": "https://..."
       },
-      "properties": {
-        "url": "https://example.com/full-image.jpg",
-        "width": 1920,
-        "height": 1080
+      "video": {
+        "duration": "1:30:00",
+        "views": 1500000,
+        "creator": "Channel Name",
+        "publisher": "YouTube"
       }
     }
   ]
 }
 ```
+
+---
+
+### News Search
+
+Search for news articles.
+
+```
+GET /proxy/v1/news/search
+```
+
+#### Parameters
+
+| Parameter | Required | Type | Default | Description |
+|-----------|----------|------|---------|-------------|
+| `q` | Yes | string | - | Search query (max 400 chars, 50 words) |
+| `country` | No | string | `US` | Country code for results |
+| `search_lang` | No | string | `en` | Search language |
+| `ui_lang` | No | string | `en-US` | UI language preference |
+| `count` | No | int | `20` | Number of results (max 50) |
+| `offset` | No | int | `0` | Pagination offset (max 9) |
+| `safesearch` | No | string | `moderate` | `off`, `moderate`, or `strict` |
+| `freshness` | No | string | - | `pd` (24h), `pw` (7d), `pm` (31d), `py` (365d) |
+| `extra_snippets` | No | bool | `false` | Get up to 5 extra snippets per result |
+
+#### Example
+
+```bash
+curl "{{BASE_URL}}/proxy/v1/news/search?q=technology&freshness=pd" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+#### Example Response
+
+```json
+{
+  "type": "news",
+  "query": {
+    "original": "technology"
+  },
+  "results": [
+    {
+      "type": "news_result",
+      "url": "https://example.com/article",
+      "title": "Breaking Tech News",
+      "description": "The latest in technology...",
+      "age": "2 hours ago",
+      "breaking": true,
+      "thumbnail": {
+        "src": "https://..."
+      },
+      "meta_url": {
+        "hostname": "example.com",
+        "favicon": "https://..."
+      }
+    }
+  ]
+}
+```
+
+---
+
+### Suggest (Autocomplete)
+
+Get search query suggestions.
+
+```
+GET /proxy/v1/suggest/search
+```
+
+#### Parameters
+
+| Parameter | Required | Type | Default | Description |
+|-----------|----------|------|---------|-------------|
+| `q` | Yes | string | - | Query to get suggestions for (max 400 chars) |
+| `country` | No | string | `US` | Country code |
+| `lang` | No | string | `en` | Language preference |
+| `count` | No | int | `5` | Number of suggestions (1-20) |
+| `rich` | No | bool | `false` | Enhance with rich results |
+
+#### Example
+
+```bash
+curl "{{BASE_URL}}/proxy/v1/suggest/search?q=how+to&count=10" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+#### Example Response
+
+```json
+{
+  "type": "suggest",
+  "query": {
+    "original": "how to"
+  },
+  "results": [
+    { "query": "how to code" },
+    { "query": "how to learn python" },
+    { "query": "how to build a website" }
+  ]
+}
+```
+
+---
 
 ### Usage Statistics
 

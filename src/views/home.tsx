@@ -1,5 +1,39 @@
 import { Layout } from "./layout";
 
+const endpoints = [
+  {
+    method: "GET",
+    path: "/proxy/v1/web/search",
+    title: "Web Search",
+    description:
+      "Search the web for pages, news, videos, discussions, and more.",
+  },
+  {
+    method: "GET",
+    path: "/proxy/v1/images/search",
+    title: "Image Search",
+    description: "Search for images across the web.",
+  },
+  {
+    method: "GET",
+    path: "/proxy/v1/videos/search",
+    title: "Video Search",
+    description: "Search for videos from YouTube, Vimeo, and more.",
+  },
+  {
+    method: "GET",
+    path: "/proxy/v1/news/search",
+    title: "News Search",
+    description: "Search for news articles from around the world.",
+  },
+  {
+    method: "GET",
+    path: "/proxy/v1/suggest/search",
+    title: "Suggestions",
+    description: "Get search query autocomplete suggestions.",
+  },
+];
+
 export const Home = () => {
   return (
     <Layout title="Hack Club Search">
@@ -29,38 +63,23 @@ export const Home = () => {
           Available Endpoints
         </h2>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl mx-auto mb-20">
-          <div class="bg-white border-2 border-brand-border/50 rounded-2xl p-6 text-left">
-            <div class="flex items-center gap-2 mb-3">
-              <span class="px-3 py-1 rounded-full text-xs font-bold tracking-wider bg-green-100 text-green-700 border border-green-200">
-                GET
-              </span>
-              <code class="text-sm font-mono text-brand-primary">
-                /proxy/v1/web/search
-              </code>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-5xl mx-auto mb-20">
+          {endpoints.map((endpoint) => (
+            <div class="bg-white border-2 border-brand-border/50 rounded-2xl p-6 text-left hover:border-brand-primary/30 transition-colors">
+              <div class="flex items-center gap-2 mb-3">
+                <span class="px-3 py-1 rounded-full text-xs font-bold tracking-wider bg-green-100 text-green-700 border border-green-200">
+                  {endpoint.method}
+                </span>
+                <code class="text-xs font-mono text-brand-primary truncate">
+                  {endpoint.path}
+                </code>
+              </div>
+              <h3 class="text-xl font-bold text-brand-heading mb-2">
+                {endpoint.title}
+              </h3>
+              <p class="text-brand-text text-sm">{endpoint.description}</p>
             </div>
-            <h3 class="text-xl font-bold text-brand-heading mb-2">
-              Web Search
-            </h3>
-            <p class="text-brand-text">
-              Search the web for pages, news, videos, discussions, and more.
-            </p>
-          </div>
-
-          <div class="bg-white border-2 border-brand-border/50 rounded-2xl p-6 text-left">
-            <div class="flex items-center gap-2 mb-3">
-              <span class="px-3 py-1 rounded-full text-xs font-bold tracking-wider bg-green-100 text-green-700 border border-green-200">
-                GET
-              </span>
-              <code class="text-sm font-mono text-brand-primary">
-                /proxy/v1/images/search
-              </code>
-            </div>
-            <h3 class="text-xl font-bold text-brand-heading mb-2">
-              Image Search
-            </h3>
-            <p class="text-brand-text">Search for images across the web.</p>
-          </div>
+          ))}
         </div>
 
         <p class="text-brand-text/60 font-medium">© 2025 Hack Club</p>
