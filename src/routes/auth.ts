@@ -143,7 +143,7 @@ auth.get("/callback", async (c) => {
       });
     });
 
-    setCookie(c, "session_token", sessionToken, {
+    setCookie(c, "hcs_session_token", sessionToken, {
       httpOnly: true,
       secure: env.NODE_ENV === "production",
       sameSite: "Lax",
@@ -162,7 +162,7 @@ auth.get("/callback", async (c) => {
 });
 
 auth.post("/logout", async (c) => {
-  const sessionToken = getCookie(c, "session_token");
+  const sessionToken = getCookie(c, "hcs_session_token");
 
   if (sessionToken) {
     await Sentry.startSpan({ name: "db.delete.session" }, async () => {
@@ -170,7 +170,7 @@ auth.post("/logout", async (c) => {
     });
   }
 
-  setCookie(c, "session_token", "", {
+  setCookie(c, "hcs_session_token", "", {
     httpOnly: true,
     secure: env.NODE_ENV === "production",
     sameSite: "Lax",

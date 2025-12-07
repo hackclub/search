@@ -13,7 +13,7 @@ import { Home } from "../views/home";
 const dashboard = new Hono<{ Variables: AppVariables }>();
 
 dashboard.get("/", async (c) => {
-  const sessionToken = getCookie(c, "session_token");
+  const sessionToken = getCookie(c, "hcs_session_token");
 
   if (sessionToken) {
     const [session] = await Sentry.startSpan(
