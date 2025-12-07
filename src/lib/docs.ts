@@ -21,8 +21,10 @@ const highlighter = await createHighlighter({
 });
 
 const docsPath = join(process.cwd(), "src", "docs.md");
-const markdownContent = readFileSync(docsPath, "utf-8")
-  .replace(/{{BASE_URL}}/g, env.BASE_URL);
+const markdownContent = readFileSync(docsPath, "utf-8").replace(
+  /{{BASE_URL}}/g,
+  env.BASE_URL,
+);
 
 const toc: { id: string; text: string; level: number }[] = [];
 const tocRenderer = new Renderer();

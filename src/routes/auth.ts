@@ -34,7 +34,9 @@ auth.use(
     limit: 30,
     windowMs: 10 * 60 * 1000,
     keyGenerator: (c: Context<{ Variables: AppVariables }>) =>
-      c.req.header("CF-Connecting-IP") || c.req.header("X-Forwarded-For") || "unknown",
+      c.req.header("CF-Connecting-IP") ||
+      c.req.header("X-Forwarded-For") ||
+      "unknown",
   }),
 );
 

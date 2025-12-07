@@ -129,22 +129,34 @@ const SearchResultSchema = type({
 const SearchSchema = type({
   "type?": type("string").describe("Always 'search'"),
   "results?": SearchResultSchema.array().describe("List of search results"),
-  "family_friendly?": type("boolean").describe("Whether results are family friendly"),
+  "family_friendly?": type("boolean").describe(
+    "Whether results are family friendly",
+  ),
 });
 
 // Query info
 const QuerySchema = type({
   "original?": type("string").describe("The original query"),
-  "show_strict_warning?": type("boolean").describe("Whether more content is available but restricted"),
+  "show_strict_warning?": type("boolean").describe(
+    "Whether more content is available but restricted",
+  ),
   "altered?": type("string").describe("The altered query used for search"),
   "safesearch?": type("boolean").describe("Whether safesearch was enabled"),
   "is_navigational?": type("boolean").describe("Whether query is navigational"),
-  "is_geolocal?": type("boolean").describe("Whether query has location relevance"),
-  "local_decision?": type("string").describe("Whether query is location sensitive"),
-  "is_news_breaking?": type("boolean").describe("Whether query has breaking news"),
+  "is_geolocal?": type("boolean").describe(
+    "Whether query has location relevance",
+  ),
+  "local_decision?": type("string").describe(
+    "Whether query is location sensitive",
+  ),
+  "is_news_breaking?": type("boolean").describe(
+    "Whether query has breaking news",
+  ),
   "spellcheck_off?": type("boolean").describe("Whether spellchecker was off"),
   "country?": type("string").describe("The country used"),
-  "more_results_available?": type("boolean").describe("Whether more results available"),
+  "more_results_available?": type("boolean").describe(
+    "Whether more results available",
+  ),
 });
 
 // Discussion result
@@ -176,7 +188,9 @@ const FAQSchema = type({
     "title?": type("string").describe("Title of the post"),
     "url?": type("string").describe("URL to the post"),
     "meta_url?": MetaUrlSchema.describe("Aggregated URL info"),
-  }).array().describe("List of Q&A results"),
+  })
+    .array()
+    .describe("List of Q&A results"),
 });
 
 // News result
@@ -260,7 +274,9 @@ const MixedResponseSchema = type({
     "type?": type("string").describe("Result type"),
     "index?": type("number.integer").describe("Position index"),
     "all?": type("boolean").describe("Whether to put all results at position"),
-  }).array().describe("Main section ranking"),
+  })
+    .array()
+    .describe("Main section ranking"),
   "top?": type("unknown[]").describe("Top section ranking"),
   "side?": type("unknown[]").describe("Side section ranking"),
 });
@@ -332,12 +348,16 @@ const ImageQuerySchema = type({
   "original?": type("string").describe("The original query"),
   "altered?": type("string").describe("Altered query by spellchecker"),
   "spellcheck_off?": type("boolean").describe("Whether spellchecker was off"),
-  "show_strict_warning?": type("string").describe("Whether lack of results is due to strict safesearch"),
+  "show_strict_warning?": type("string").describe(
+    "Whether lack of results is due to strict safesearch",
+  ),
 });
 
 // Image Search Extra
 const ImageExtraSchema = type({
-  "might_be_offensive?": type("boolean").describe("Whether results might be offensive"),
+  "might_be_offensive?": type("boolean").describe(
+    "Whether results might be offensive",
+  ),
 });
 
 // Image Search API Response
