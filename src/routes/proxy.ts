@@ -13,10 +13,6 @@ import { env } from "../env";
 import { requireApiKey } from "../middleware/auth";
 import type { AppVariables } from "../types";
 
-// ============================================================================
-// CONSTANTS
-// ============================================================================
-
 const BRAVE_API_BASE = "https://api.search.brave.com/res/v1";
 
 const ENDPOINTS = {
@@ -28,10 +24,6 @@ const ENDPOINTS = {
 } as const;
 
 type EndpointType = keyof typeof ENDPOINTS;
-
-// ============================================================================
-// HELPERS (DRY)
-// ============================================================================
 
 function getBraveHeaders(): Record<string, string> {
   return {
@@ -105,69 +97,64 @@ async function logRequest(
   });
 }
 
-async function handleSearchRequest<T extends Record<string, unknown>>(
-  c: Context<{ Variables: AppVariables }>,
-  endpoint: EndpointType,
-  queryParams: T,
-): Promise<Response> {
-  const apiKey = c.get("apiKey");
-  const user = c.get("user");
-  const startTime = Date.now();
+function handleSearchRequest(endpoint: EndpointType) {
+  return async (c: Context<{ Variables: AppVariables }>) => {
+    const apiKey = c.get("apiKey");
+    const user = c.get("user");
+    const queryParams = c.req.query();
+    const startTime = Date.now();
 
-  try {
-    validateQuery(queryParams.q as string | undefined);
+    try {
+      validateQuery(queryParams.q as string | undefined);
 
-    const searchUrl = buildSearchUrl(ENDPOINTS[endpoint], queryParams);
+      const searchUrl = buildSearchUrl(ENDPOINTS[endpoint], queryParams);
 
-    const response = await fetch(searchUrl, {
-      method: "GET",
-      headers: getBraveHeaders(),
-    });
+      const response = await fetch(searchUrl, {
+        method: "GET",
+        headers: getBraveHeaders(),
+      });
 
-    const responseData = await response.json();
-    const duration = Date.now() - startTime;
+      const responseData = await response.json();
+      const duration = Date.now() - startTime;
 
-    await logRequest(
-      apiKey.id,
-      user.id,
-      user.slackId,
-      endpoint,
-      queryParams,
-      responseData,
-      getRequestHeaders(c),
-      c.get("ip"),
-      duration,
-    );
+      await logRequest(
+        apiKey.id,
+        user.id,
+        user.slackId,
+        endpoint,
+        queryParams,
+        responseData,
+        getRequestHeaders(c),
+        c.get("ip"),
+        duration,
+      );
 
-    return c.json(responseData, response.status as ContentfulStatusCode);
-  } catch (error) {
-    const duration = Date.now() - startTime;
+      return c.json(responseData, response.status as ContentfulStatusCode);
+    } catch (error) {
+      const duration = Date.now() - startTime;
 
-    if (error instanceof HTTPException) {
-      throw error;
+      if (error instanceof HTTPException) {
+        throw error;
+      }
+
+      console.error(`${endpoint} search proxy error:`, error);
+
+      await logRequest(
+        apiKey.id,
+        user.id,
+        user.slackId,
+        endpoint,
+        {},
+        { error: error instanceof Error ? error.message : "Unknown error" },
+        getRequestHeaders(c),
+        c.get("ip"),
+        duration,
+      );
+
+      throw new HTTPException(500, { message: "Internal server error" });
     }
-
-    console.error(`${endpoint} search proxy error:`, error);
-
-    await logRequest(
-      apiKey.id,
-      user.id,
-      user.slackId,
-      endpoint,
-      {},
-      { error: error instanceof Error ? error.message : "Unknown error" },
-      getRequestHeaders(c),
-      c.get("ip"),
-      duration,
-    );
-
-    throw new HTTPException(500, { message: "Internal server error" });
-  }
+  };
 }
-
-// ============================================================================
-// APP SETUP
-// ============================================================================
 
 const proxy = new Hono<{ Variables: AppVariables }>();
 
@@ -194,7 +181,7 @@ proxy.use(
 );
 
 const limiterOpts = {
-  limit: 100,
+  limit: 200,
   windowMs: 30 * 60 * 1000,
   standardHeaders: "draft-6",
   keyGenerator: (c: Context<{ Variables: AppVariables }>) =>
@@ -202,63 +189,11 @@ const limiterOpts = {
 } as const;
 const standardLimiter = rateLimiter(limiterOpts);
 
-proxy.use(requireApiKey);
-
-// ============================================================================
-// ROUTES
-// ============================================================================
-
-proxy.get("/stats", standardLimiter, async (c) => {
-  const user = c.get("user");
-
-  const stats = await Sentry.startSpan(
-    { name: "db.select.userStats" },
-    async () => {
-      return await db
-        .select({
-          totalRequests: sql<number>`COUNT(*)::int`,
-        })
-        .from(requestLogs)
-        .where(eq(requestLogs.userId, user.id));
-    },
-  );
-
-  return c.json(stats[0] || { totalRequests: 0 });
-});
-
-// Web Search
-proxy.use("/web/search", etag());
-proxy.get("/web/search", standardLimiter, async (c) => {
-  const queryParams = c.req.query();
-  return handleSearchRequest(c, "web", queryParams);
-});
-
-// Image Search
-proxy.use("/images/search", etag());
-proxy.get("/images/search", standardLimiter, async (c) => {
-  const queryParams = c.req.query();
-  return handleSearchRequest(c, "images", queryParams);
-});
-
-// Video Search
-proxy.use("/videos/search", etag());
-proxy.get("/videos/search", standardLimiter, async (c) => {
-  const queryParams = c.req.query();
-  return handleSearchRequest(c, "videos", queryParams);
-});
-
-// News Search
-proxy.use("/news/search", etag());
-proxy.get("/news/search", standardLimiter, async (c) => {
-  const queryParams = c.req.query();
-  return handleSearchRequest(c, "news", queryParams);
-});
-
-// Suggest
-proxy.use("/suggest/search", etag());
-proxy.get("/suggest/search", standardLimiter, async (c) => {
-  const queryParams = c.req.query();
-  return handleSearchRequest(c, "suggest", queryParams);
-});
+proxy.use(requireApiKey, etag(), standardLimiter);
+proxy.get("/web/search", handleSearchRequest("web"));
+proxy.get("/images/search", handleSearchRequest("images"));
+proxy.get("/videos/search", handleSearchRequest("videos"));
+proxy.get("/news/search", handleSearchRequest("news"));
+proxy.get("/suggest/search", handleSearchRequest("suggest"));
 
 export default proxy;
