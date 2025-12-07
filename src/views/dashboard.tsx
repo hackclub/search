@@ -7,6 +7,7 @@ import type {
 } from "../types";
 import { EmptyState } from "./components/EmptyState";
 import { Header } from "./components/Header";
+import { IdvBanner } from "./components/IdvBanner";
 import { Modal, ModalActions, ModalButton } from "./components/Modal";
 import { StatCard } from "./components/StatCard";
 import { Table } from "./components/Table";
@@ -68,19 +69,7 @@ export const Dashboard = ({
       >
         <Header title="hacksearch" user={user} showGlobalStats />
 
-        {showIdvBanner && (
-          <div class="w-full bg-red-100 border-b border-red-200 px-4 py-3 text-center">
-            <p class="text-sm text-red-800">
-              Identity verification required. Please verify at{" "}
-              <a
-                href="https://identity.hackclub.com"
-                class="underline font-medium"
-              >
-                identity.hackclub.com
-              </a>
-            </p>
-          </div>
-        )}
+        {showIdvBanner && <IdvBanner />}
 
         <div
           class={`w-full max-w-6xl mx-auto px-4 py-8 ${showIdvBanner ? "grayscale opacity-20 pointer-events-none select-none" : ""}`}
