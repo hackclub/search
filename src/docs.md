@@ -258,7 +258,7 @@ GET /res/v1/stats
 
 ## Rate Limits
 
-- 100 requests per 30 minutes per user
+- 400 requests per 30 minutes per user
 - Maximum query length: 400 characters
 
 ## Error Responses

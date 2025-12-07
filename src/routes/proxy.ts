@@ -187,7 +187,7 @@ proxy.use(
 );
 
 const limiterOpts = {
-  limit: 200,
+  limit: 400,
   windowMs: 30 * 60 * 1000,
   standardHeaders: "draft-6",
   keyGenerator: (c: Context<{ Variables: AppVariables }>) =>
