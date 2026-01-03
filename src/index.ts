@@ -31,7 +31,18 @@ const app = new Hono<{ Variables: AppVariables & RequestIdVariables }>();
 
 app.use("*", secureHeaders());
 app.use("/*", requestId(), trimTrailingSlash());
-app.use("/*", csrf({ origin: env.BASE_URL }));
+app.use(
+  "/*",
+  csrf({
+    origin: (origin, c) => {
+      // Allow internal API calls without origin validation
+      if (c.req.path.startsWith("/internal/")) {
+        return true;
+      }
+      return origin === env.BASE_URL;
+    },
+  }),
+);
 app.use(
   "/res/v1/*",
   cors({
