@@ -13,10 +13,20 @@ curl "{{BASE_URL}}/res/v1/web/search?q=hack+club" \
 
 ## Authentication
 
-All API requests require a Bearer token. Get your API key from the [dashboard]({{BASE_URL}}/dashboard).
+All API requests require an API key. Get your API key from the [dashboard]({{BASE_URL}}/dashboard).
+
+### Bearer Token (Recommended)
 
 ```
 Authorization: Bearer sk-hc-v1-...
+```
+
+### X-Subscription-Token Header
+
+Alternatively, you can pass your API key as the `x-subscription-token` header:
+
+```
+x-subscription-token: sk-hc-v1-...
 ```
 
 ## Endpoints
@@ -48,6 +58,13 @@ GET /res/v1/web/search
 ```bash
 curl "{{BASE_URL}}/res/v1/web/search?q=raspberry+pi+projects&count=10" \
   -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+Or with `x-subscription-token` header:
+
+```bash
+curl "{{BASE_URL}}/res/v1/web/search?q=raspberry+pi+projects&count=10" \
+  -H "x-subscription-token: YOUR_API_KEY"
 ```
 
 ---

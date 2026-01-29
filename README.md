@@ -35,10 +35,24 @@ ENFORCE_IDV=false
 
 ## API Endpoints
 
+All endpoints require authentication via Bearer token or `x-subscription-token` header.
+
 - `GET /res/v1/web/search?q=...` - Web search
 - `GET /res/v1/images/search?q=...` - Image search
 - `GET /res/v1/stats` - Usage statistics
 - `GET /res/v1/openapi.json` - OpenAPI specification
+
+### Authentication
+
+```bash
+# Bearer token
+curl "https://search.hackclub.com/res/v1/web/search?q=hack+club" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+
+# x-subscription-token header
+curl "https://search.hackclub.com/res/v1/web/search?q=hack+club" \
+  -H "x-subscription-token: YOUR_API_KEY"
+```
 
 ## Development
 
