@@ -106,13 +106,22 @@ export async function requireApiKey(
   next: Next,
 ) {
   return Sentry.startSpan({ name: "middleware.requireApiKey" }, async () => {
-    const authHeader = c.req.header("Authorization");
+    let key: string | undefined;
 
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      throw new HTTPException(401, { message: "Authentication required" });
+    // Try Bearer token first
+    const authHeader = c.req.header("Authorization");
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      key = authHeader.substring(7);
     }
 
-    const key = authHeader.substring(7);
+    // Fall back to x-subscription-token header
+    if (!key) {
+      key = c.req.header("x-subscription-token");
+    }
+
+    if (!key) {
+      throw new HTTPException(401, { message: "Authentication required" });
+    }
 
     const [apiKey] = await Sentry.startSpan(
       { name: "db.select.apiKey" },
