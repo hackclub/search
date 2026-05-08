@@ -22,7 +22,7 @@
     "@shikijs/transformers": "^3.15.0",
     "arktype": "^2.1.26",
     "drizzle-orm": "^0.44.7",
-    "hono": "^4.10.6",
+    "hono": "^4.12.18",
     "hono-rate-limiter": "^0.4.2",
     "marked": "^17.0.0",
     "marked-alert": "^2.1.2",
